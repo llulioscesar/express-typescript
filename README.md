@@ -5,15 +5,15 @@
     yarn add typescript express @types/express
     yarn add ts-node-dev --dev
 
-####Scripts package.json
+#### Scripts package.json
 
 	"scripts": { 
       "dev": "ts-node-dev --respawn --transpileOnly ./src/server.ts",
-      "build": "tsc ./dist/server.js",
+      "build": "tsc",
 	  "start": "node ./dist/server.js"
 	  },
 
-####Configuracion tsconfig.json
+#### Configuracion tsconfig.json
 
 	{
 		"compilerOptions": {
