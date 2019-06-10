@@ -8,10 +8,11 @@
 #### Scripts package.json
 
 	"scripts": { 
-      "dev": "ts-node-dev --respawn --transpileOnly ./src/servidor.ts",
-      "build": "tsc",
-	  "start": "node ./dist/servidor.js"
-	  },
+		"dev": "ts-node-dev --respawn --transpileOnly ./src/servidor.ts",
+		"build": "tsc",
+		"start": "NODE_ENV=production node ./dist/servidor.js",
+		"start_windows": "set NODE_ENV=production && node ./dist/servidor.js"
+	},
 
 #### Configuracion tsconfig.json
 
@@ -102,12 +103,13 @@
 	    }
 
 	    private configuracion():void{
-		this.app.set('views', path.join(__dirname, 'vistas'));
+		let ruta = __dirname.substring(0, __dirname.length - 4);
+		this.app.set('views', path.join(ruta, 'vistas'));
 		this.app.set('view engine', 'pug');
 		this.app.use(logger('dev'));
 		this.app.use(express.json());
 		this.app.use(express.urlencoded({extended:false}));
-		this.app.use(express.static(path.join(__dirname, 'publico')));
+		this.app.use(express.static(path.join(ruta, 'publico')));
 
 		Rutas.map(this.app);
 
