@@ -88,6 +88,7 @@
 	server.on('error', onError);
 	server.on('listening', onListening);
 #### src/app.ts
+	import * as createError from 'http-errors'
 	import * as express from 'express'
 	import * as logger from 'morgan'
 	import indexRuta from './rutas'
@@ -106,12 +107,18 @@
 		this.app.use(logger('dev'));
 		this.app.use(express.json());
 		this.app.use(express.urlencoded({extended:false}));
+		// catch 404 and forward to error handler
+		this.app.use((req:any, res:any, next:any) => {
+		    next(createError(404));
+		});
+		// error handler
 		this.app.use((error:any, req:any, res:any, next:any):void => {
-		    console.error(error.stack);
-		    res.status(500)
-			.json({
-			    error: error.message
-			})
+		    res.locals.message = err.message;
+		    res.locals.error = req.app.get('env') === 'development' ? err : {};
+		    
+		    // render the error page
+		    res.status(err.status || 500);
+		    res.render('error');
 		})
 	    }
 	}
