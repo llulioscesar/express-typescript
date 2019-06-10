@@ -2,7 +2,7 @@
 ### #Dependencias
 
     yarn init
-    yarn add typescript express @types/express morgan @types/morgan
+    yarn add typescript express @types/express morgan @types/morgan http-errors @types/http-errors
     yarn add ts-node-dev --dev
 
 #### Scripts package.json
@@ -113,11 +113,11 @@
 		});
 		// error handler
 		this.app.use((error:any, req:any, res:any, next:any):void => {
-		    res.locals.message = err.message;
-		    res.locals.error = req.app.get('env') === 'development' ? err : {};
-		    
+		    res.locals.message = error.message;
+		    res.locals.error = req.app.get('env') === 'development' ? error : {};
+
 		    // render the error page
-		    res.status(err.status || 500);
+		    res.status(error.status || 500);
 		    res.render('error');
 		})
 	    }
