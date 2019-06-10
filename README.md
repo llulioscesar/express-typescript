@@ -2,7 +2,7 @@
 ### #Dependencias
 
     yarn init
-    yarn add typescript express @types/express morgan @types/morgan http-errors @types/http-errors
+    yarn add typescript express @types/express morgan @types/morgan http-errors @types/http-errors pug @types/pug
     yarn add ts-node-dev --dev
 
 #### Scripts package.json
@@ -89,24 +89,28 @@
 	server.on('listening', onListening);
 #### src/app.ts
 	import * as createError from 'http-errors'
+	import * as path from 'path'
 	import * as express from 'express'
 	import * as logger from 'morgan'
-	import indexRuta from './rutas'
+	import {Rutas} from './rutas'
 
 	class App {
 	    public app:express.Application = express();
 
 	    constructor(){
 		this.configuracion();
-
-		this.app.use('/', indexRuta);
-
 	    }
 
 	    private configuracion():void{
+		this.app.set('views', path.join(__dirname, 'vistas'));
+		this.app.set('view engine', 'pug');
 		this.app.use(logger('dev'));
 		this.app.use(express.json());
 		this.app.use(express.urlencoded({extended:false}));
+		this.app.use(express.static(path.join(__dirname, 'publico')));
+
+		Rutas.map(this.app);
+
 		// catch 404 and forward to error handler
 		this.app.use((req:any, res:any, next:any) => {
 		    next(createError(404));
@@ -119,17 +123,54 @@
 		    // render the error page
 		    res.status(error.status || 500);
 		    res.render('error');
-		})
+		});
 	    }
 	}
 
 	export default new App().app;
 #### src/rutas/index.ts
-	import {Request, Response, Router} from 'express'
-	var router = Router();
+	import {PrincipalRuta} from './principal'
 
-	router.get('/', (req:Request, res:Response) => {
-	    res.send("Express TypeScript")
-	});
+	export class Rutas {
 
-	export default router;
+	    public static map(app:any):void{
+		new PrincipalRuta(app, '/').start();
+	    }
+
+	}
+#### src/rutas/principal.ts
+	import {Request, Response} from "express";
+	import {Ruta} from './ruta'
+
+	export class PrincipalRuta extends Ruta{
+	    public start():void{
+		this.app.route(this.endPoint)
+		    .get((req:Request, res:Response) => {
+			res.send('Express TypeScript')
+		    })
+	    }
+	}
+#### src/rutas/ruta.ts
+	export abstract class Ruta {
+	    protected app:any;
+	    protected endPoint:string;
+	    public constructor(app:any, endpoint:string) {
+		this.app = app;
+		this.endPoint = endpoint;
+	    }
+	}
+#### src/vistas/layout.pug
+	doctype html
+	html
+	    head
+		title= title
+		link(rel='stylesheet', href='/stylesheets/style.css')
+	    body
+		block content
+#### src/vistas/error.pug
+	extends layout
+
+	block content
+	    h1= message
+	    h2= error.status
+	    pre #{error.stack}
