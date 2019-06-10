@@ -12,20 +12,6 @@
       "build": "tsc ./dist/server.js",
 	  "start": "node ./dist/server.js"
 	  },
-# express-typescript
-####Dependencias
-
-    yarn init
-    yarn add typescript express @types/express
-    yarn add ts-node-dev --dev
-
-####Scripts package.json
-
-	"scripts": { 
-      "dev": "ts-node-dev --respawn --transpileOnly ./src/server.ts",
-      "build": "tsc ./dist/server.js",
-	  "start": "node ./dist/server.js"
-	  },
 
 ####Configuracion tsconfig.json
 
