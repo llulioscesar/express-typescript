@@ -1,5 +1,5 @@
 # express-typescript
-####Dependencias
+### #Dependencias
 
     yarn init
     yarn add typescript express @types/express morgan @types/morgan
@@ -87,3 +87,42 @@
 	server.listen(PORT);
 	server.on('error', onError);
 	server.on('listening', onListening);
+#### src/app.ts
+	import * as express from 'express'
+	import * as logger from 'morgan'
+	import indexRuta from './rutas'
+
+	class App {
+	    public app:express.Application = express();
+
+	    constructor(){
+		this.configuracion();
+
+		this.app.use('/', indexRuta);
+
+	    }
+
+	    private configuracion():void{
+		this.app.use(logger('dev'));
+		this.app.use(express.json());
+		this.app.use(express.urlencoded({extended:false}));
+		this.app.use((error:any, req:any, res:any, next:any):void => {
+		    console.error(error.stack);
+		    res.status(500)
+			.json({
+			    error: error.message
+			})
+		})
+	    }
+	}
+
+	export default new App().app;
+#### src/rutas/index.ts
+	import {Request, Response, Router} from 'express'
+	var router = Router();
+
+	router.get('/', (req:Request, res:Response) => {
+	    res.send("Express TypeScript")
+	});
+
+	export default router;
